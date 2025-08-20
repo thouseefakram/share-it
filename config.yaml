@@ -1,0 +1,59 @@
+# config.yaml
+app:
+  name: "Direct File Transfer"
+  version: "1.0.0"
+  description: "P2P file transfer with OTP authentication"
+  debug: false
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  reload: false
+  workers: 4
+
+security:
+  secret_key: "your-secret-key-change-in-production"
+  algorithm: "HS256"
+  access_token_expire_minutes: 30
+  otp_length: 6
+  otp_expiry_minutes: 10
+
+storage:
+  max_file_size_mb: 50
+  allowed_extensions:
+    - ".txt"
+    - ".pdf"
+    - ".png"
+    - ".jpg"
+    - ".jpeg"
+    - ".gif"
+    - ".mp4"
+    - ".mp3"
+    - ".zip"
+    - ".rar"
+    - ".doc"
+    - ".docx"
+    - ".xls"
+    - ".xlsx"
+    - ".ppt"
+    - ".pptx"
+
+database:
+  # For production, use Redis or PostgreSQL
+  redis_url: "redis://redis:6379/0"
+  # For development, use in-memory storage
+  use_memory_storage: true
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "app.log"
+
+cors:
+  origins:
+    - "http://localhost:8000"
+    - "http://127.0.0.1:8000"
+    - "http://0.0.0.0:8000"
+  allow_credentials: true
+  allow_methods: ["*"]
+  allow_headers: ["*"]

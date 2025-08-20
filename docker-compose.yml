@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  file-transfer-app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+      - ./static:/app/static
+      - ./templates:/app/templates
+    environment:
+      - ENVIRONMENT=production
+      - HOST=0.0.0.0
+      - PORT=8000
+    restart: unless-stopped
+    networks:
+      - file-transfer-network
+
+  # Redis for production (optional but recommended)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - file-transfer-network
+
+volumes:
+  redis_data:
+
+networks:
+  file-transfer-network:
+    driver: bridge
