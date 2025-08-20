@@ -1,0 +1,920 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct File Transfer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-weight: 400;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .card-icon {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .otp-display {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.5rem;
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--success);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .file-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+        }
+        
+        .file-icon {
+            margin-right: 12px;
+            color: var(--primary);
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 500;
+        }
+        
+        .file-size {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .status {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-transferring {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 8px;
+            background: white;
+            box-shadow: var(--shadow);
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .notification.warning {
+            border-left: 4px solid #ffc107;
+        }
+        
+        .drag-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+            transition: all 0.2s;
+        }
+        
+        .drag-area.active {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .drag-area i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Direct File Transfer</h1>
+            <p class="subtitle">Send files directly between devices with OTP authentication - No cloud storage</p>
+        </header>
+        
+        <div class="grid">
+            <!-- Sender Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <h2 class="card-title">Send Files</h2>
+                </div>
+                
+                <div id="sender-setup">
+                    <p>Generate an OTP to share with the recipient</p>
+                    <button id="generate-otp-btn" class="btn">
+                        <i class="fas fa-key"></i> Generate OTP
+                    </button>
+                </div>
+                
+                <div id="otp-display" class="hidden">
+                    <p>Share this OTP with the recipient:</p>
+                    <div class="otp-display" id="otp-value">123456</div>
+                    <p>This OTP will expire in <strong id="expiry-time">10:00</strong> minutes</p>
+                    
+                    <div class="form-group">
+                        <label for="file-input">Select files to send:</label>
+                        <div class="drag-area" id="drag-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & Drop files here</p>
+                            <p>or</p>
+                            <input type="file" id="file-input" multiple style="display: none;">
+                            <button class="btn btn-outline" onclick="document.getElementById('file-input').click()">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="file-list" class="file-list"></div>
+                    
+                    <button id="start-transfer-btn" class="btn hidden">
+                        <i class="fas fa-play"></i> Start Transfer
+                    </button>
+                </div>
+                
+                <div id="transfer-progress" class="hidden">
+                    <h3>Transfer Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                    <p id="progress-text">Waiting for receiver to connect...</p>
+                    <div id="transfer-file-list" class="file-list"></div>
+                </div>
+            </div>
+            
+            <!-- Receiver Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h2 class="card-title">Receive Files</h2>
+                </div>
+                
+                <div id="receiver-setup">
+                    <div class="form-group">
+                        <label for="otp-input">Enter OTP from sender:</label>
+                        <input type="text" id="otp-input" placeholder="Enter 6-digit OTP" maxlength="6">
+                    </div>
+                    
+                    <button id="connect-otp-btn" class="btn">
+                        <i class="fas fa-plug"></i> Connect
+                    </button>
+                </div>
+                
+                <div id="receiver-waiting" class="hidden">
+                    <p>Connected to sender. Waiting for files...</p>
+                    <div class="status status-pending">Waiting</div>
+                </div>
+                
+                <div id="receiver-progress" class="hidden">
+                    <h3>Incoming Files</h3>
+                    <div class="progress-bar">
+                        <div class="progress" id="receiver-progress-bar"></div>
+                    </div>
+                    <p id="receiver-progress-text">Preparing to receive files...</p>
+                    <div id="receiver-file-list" class="file-list"></div>
+                    
+                    <button id="save-files-btn" class="btn hidden">
+                        <i class="fas fa-save"></i> Save Files
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification hidden">
+        <p id="notification-message"></p>
+    </div>
+    
+    <script>
+        // DOM elements
+        const generateOtpBtn = document.getElementById('generate-otp-btn');
+        const otpDisplay = document.getElementById('otp-display');
+        const otpValue = document.getElementById('otp-value');
+        const expiryTime = document.getElementById('expiry-time');
+        const fileInput = document.getElementById('file-input');
+        const dragArea = document.getElementById('drag-area');
+        const fileList = document.getElementById('file-list');
+        const startTransferBtn = document.getElementById('start-transfer-btn');
+        const transferProgress = document.getElementById('transfer-progress');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const transferFileList = document.getElementById('transfer-file-list');
+        
+        const otpInput = document.getElementById('otp-input');
+        const connectOtpBtn = document.getElementById('connect-otp-btn');
+        const receiverSetup = document.getElementById('receiver-setup');
+        const receiverWaiting = document.getElementById('receiver-waiting');
+        const receiverProgress = document.getElementById('receiver-progress');
+        const receiverProgressBar = document.getElementById('receiver-progress-bar');
+        const receiverProgressText = document.getElementById('receiver-progress-text');
+        const receiverFileList = document.getElementById('receiver-file-list');
+        const saveFilesBtn = document.getElementById('save-files-btn');
+        
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        
+        // Global variables
+        let ws = null;
+        let clientId = null;
+        let currentOtp = null;
+        let selectedFiles = [];
+        let fileReaders = {};
+        let receivedFiles = {};
+        
+        // Generate client ID
+        clientId = 'client_' + Math.random().toString(36).substr(2, 9);
+        
+        // Initialize WebSocket connection
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/${clientId}`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                showNotification('Connected to transfer server', 'success');
+            };
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+            
+            ws.onclose = function() {
+                showNotification('Connection closed', 'warning');
+                // Try to reconnect after 3 seconds
+                setTimeout(initWebSocket, 3000);
+            };
+            
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                showNotification('Connection error', 'error');
+            };
+        }
+        
+        // Handle incoming WebSocket messages
+        function handleWebSocketMessage(data) {
+            console.log('Received message:', data);
+            
+            switch(data.type) {
+                case 'otp_registered':
+                    showNotification(data.message, 'success');
+                    break;
+                    
+                case 'receiver_connected':
+                    showNotification(data.message, 'success');
+                    progressText.textContent = 'Receiver connected. Ready to transfer.';
+                    break;
+                    
+                case 'file_incoming':
+                    addFileToReceiverList(data.metadata);
+                    break;
+                    
+                case 'file_chunk':
+                    receiveFileChunk(data);
+                    break;
+                    
+                case 'transfer_complete':
+                    showNotification(data.message, 'success');
+                    if (receivedFiles[data.file_id]) {
+                        receivedFiles[data.file_id].status = 'completed';
+                        updateReceiverFileStatus(data.file_id, 'completed');
+                    }
+                    break;
+                    
+                case 'peer_disconnected':
+                    showNotification(data.message, 'warning');
+                    break;
+                    
+                case 'error':
+                    showNotification(data.message, 'error');
+                    break;
+            }
+        }
+        
+        // Generate OTP
+        generateOtpBtn.addEventListener('click', async function() {
+            try {
+                const response = await fetch('/generate_otp', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                currentOtp = data.otp;
+                
+                // Display OTP
+                otpValue.textContent = currentOtp;
+                otpDisplay.classList.remove('hidden');
+                
+                // Start countdown
+                const expiresAt = new Date(data.expires_at);
+                startCountdown(expiresAt);
+                
+                // Register as sender with this OTP
+                ws.send(JSON.stringify({
+                    type: 'register_otp',
+                    otp: currentOtp,
+                    role: 'sender'
+                }));
+                
+                showNotification('OTP generated successfully', 'success');
+            } catch (error) {
+                console.error('Error generating OTP:', error);
+                showNotification('Failed to generate OTP', 'error');
+            }
+        });
+        
+        // Connect with OTP
+        connectOtpBtn.addEventListener('click', function() {
+            const otp = otpInput.value.trim();
+            
+            if (otp.length !== 6) {
+                showNotification('Please enter a valid 6-digit OTP', 'error');
+                return;
+            }
+            
+            currentOtp = otp;
+            
+            // Register as receiver with this OTP
+            ws.send(JSON.stringify({
+                type: 'register_otp',
+                otp: currentOtp,
+                role: 'receiver'
+            }));
+            
+            receiverSetup.classList.add('hidden');
+            receiverWaiting.classList.remove('hidden');
+            
+            showNotification('Connecting to sender...', 'success');
+        });
+        
+        // File selection handling
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        // Drag and drop handling
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dragArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dragArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dragArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dragArea.classList.add('active');
+        }
+        
+        function unhighlight() {
+            dragArea.classList.remove('active');
+        }
+        
+        dragArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+        
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+        
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            updateFileList();
+        }
+        
+        function updateFileList() {
+            fileList.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const listItem = document.createElement('div');
+                listItem.className = 'file-item';
+                listItem.innerHTML = `
+                    <div class="file-icon">
+                        <i class="fas fa-file"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <div class="status status-pending">Pending</div>
+                `;
+                fileList.appendChild(listItem);
+            });
+            
+            if (selectedFiles.length > 0) {
+                startTransferBtn.classList.remove('hidden');
+            } else {
+                startTransferBtn.classList.add('hidden');
+            }
+        }
+        
+        // Start file transfer
+        startTransferBtn.addEventListener('click', function() {
+            otpDisplay.classList.add('hidden');
+            transferProgress.classList.remove('hidden');
+            
+            // Send file metadata first
+            selectedFiles.forEach((file, index) => {
+                const fileId = 'file_' + Date.now() + '_' + index;
+                
+                ws.send(JSON.stringify({
+                    type: 'file_metadata',
+                    otp: currentOtp,
+                    metadata: {
+                        id: fileId,
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        lastModified: file.lastModified
+                    }
+                }));
+                
+                // Add to transfer file list
+                addFileToTransferList(fileId, file);
+                
+                // Start reading and sending the file
+                readAndSendFile(fileId, file);
+            });
+        });
+        
+        function addFileToTransferList(fileId, file) {
+            const listItem = document.createElement('div');
+            listItem.className = 'file-item';
+            listItem.id = `transfer-file-${fileId}`;
+            listItem.innerHTML = `
+                <div class="file-icon">
+                    <i class="fas fa-file"></i>
+                </div>
+                <div class="file-info">
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${formatFileSize(file.size)}</div>
+                </div>
+                <div class="status status-pending" id="transfer-status-${fileId}">Pending</div>
+            `;
+            transferFileList.appendChild(listItem);
+        }
+        
+        function updateTransferFileStatus(fileId, status, progress = 0) {
+            const statusElement = document.getElementById(`transfer-status-${fileId}`);
+            if (statusElement) {
+                statusElement.textContent = status === 'transferring' ? 
+                    `Transferring ${progress}%` : 
+                    status.charAt(0).toUpperCase() + status.slice(1);
+                
+                statusElement.className = `status status-${status}`;
+            }
+        }
+        
+        function addFileToReceiverList(metadata) {
+            const listItem = document.createElement('div');
+            listItem.className = 'file-item';
+            listItem.id = `receiver-file-${metadata.id}`;
+            listItem.innerHTML = `
+                <div class="file-icon">
+                    <i class="fas fa-file"></i>
+                </div>
+                <div class="file-info">
+                    <div class="file-name">${metadata.name}</div>
+                    <div class="file-size">${formatFileSize(metadata.size)}</div>
+                </div>
+                <div class="status status-pending" id="receiver-status-${metadata.id}">Pending</div>
+            `;
+            receiverFileList.appendChild(listItem);
+            
+            // Initialize file storage
+            receivedFiles[metadata.id] = {
+                metadata: metadata,
+                chunks: [],
+                receivedSize: 0,
+                status: 'pending'
+            };
+            
+            receiverWaiting.classList.add('hidden');
+            receiverProgress.classList.remove('hidden');
+        }
+        
+        function updateReceiverFileStatus(fileId, status, progress = 0) {
+            const statusElement = document.getElementById(`receiver-status-${fileId}`);
+            if (statusElement) {
+                statusElement.textContent = status === 'transferring' ? 
+                    `Receiving ${progress}%` : 
+                    status.charAt(0).toUpperCase() + status.slice(1);
+                
+                statusElement.className = `status status-${status}`;
+            }
+            
+            // Show save button when all files are completed
+            const allCompleted = Object.values(receivedFiles).every(file => file.status === 'completed');
+            if (allCompleted) {
+                saveFilesBtn.classList.remove('hidden');
+            }
+        }
+        
+        function receiveFileChunk(data) {
+            const fileId = data.file_id;
+            const chunk = data.chunk;
+            const isLast = data.is_last;
+            
+            if (!receivedFiles[fileId]) return;
+            
+            // Store the chunk
+            receivedFiles[fileId].chunks.push(chunk);
+            receivedFiles[fileId].receivedSize += chunk.size;
+            
+            // Update progress
+            const progress = Math.round((receivedFiles[fileId].receivedSize / receivedFiles[fileId].metadata.size) * 100);
+            receivedFiles[fileId].status = 'transferring';
+            updateReceiverFileStatus(fileId, 'transferring', progress);
+            updateReceiverOverallProgress();
+            
+            if (isLast) {
+                receivedFiles[fileId].status = 'completed';
+                updateReceiverFileStatus(fileId, 'completed');
+                
+                // Check if all files are completed
+                const allCompleted = Object.values(receivedFiles).every(file => file.status === 'completed');
+                if (allCompleted) {
+                    saveFilesBtn.classList.remove('hidden');
+                }
+            }
+        }
+        
+        function updateReceiverOverallProgress() {
+            const totalSize = Object.values(receivedFiles).reduce((sum, file) => sum + file.metadata.size, 0);
+            const receivedSize = Object.values(receivedFiles).reduce((sum, file) => sum + file.receivedSize, 0);
+            const progress = Math.round((receivedSize / totalSize) * 100);
+            
+            receiverProgressBar.style.width = `${progress}%`;
+            receiverProgressText.textContent = `Receiving files... ${progress}%`;
+        }
+        
+        // Save received files
+        saveFilesBtn.addEventListener('click', function() {
+            Object.values(receivedFiles).forEach(file => {
+                if (file.status === 'completed') {
+                    // Combine chunks
+                    const blob = new Blob(file.chunks, { type: file.metadata.type });
+                    
+                    // Create download link
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = file.metadata.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            });
+            
+            showNotification('Files saved successfully', 'success');
+        });
+        
+        // File reading and sending
+        function readAndSendFile(fileId, file) {
+            const chunkSize = 64 * 1024; // 64KB chunks
+            let offset = 0;
+            let chunkIndex = 0;
+            
+            fileReaders[fileId] = {
+                file: file,
+                offset: offset,
+                chunkIndex: chunkIndex
+            };
+            
+            updateTransferFileStatus(fileId, 'transferring', 0);
+            
+            function readNextChunk() {
+                const reader = new FileReader();
+                const chunk = file.slice(offset, offset + chunkSize);
+                
+                reader.onload = function(e) {
+                    ws.send(JSON.stringify({
+                        type: 'file_chunk',
+                        otp: currentOtp,
+                        file_id: fileId,
+                        chunk: e.target.result,
+                        is_last: offset + chunkSize >= file.size
+                    }));
+                    
+                    offset += chunk.size;
+                    chunkIndex++;
+                    
+                    const progress = Math.round((offset / file.size) * 100);
+                    updateTransferFileStatus(fileId, 'transferring', progress);
+                    updateOverallProgress();
+                    
+                    if (offset < file.size) {
+                        // Read next chunk after a short delay to avoid blocking
+                        setTimeout(readNextChunk, 10);
+                    } else {
+                        // File transfer complete
+                        updateTransferFileStatus(fileId, 'completed');
+                        ws.send(JSON.stringify({
+                            type: 'transfer_complete',
+                            otp: currentOtp,
+                            file_id: fileId
+                        }));
+                    }
+                };
+                
+                reader.readAsArrayBuffer(chunk);
+            }
+            
+            readNextChunk();
+        }
+        
+        function updateOverallProgress() {
+            const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+            let transferredSize = 0;
+            
+            Object.values(fileReaders).forEach(reader => {
+                transferredSize += reader.offset;
+            });
+            
+            const progress = Math.round((transferredSize / totalSize) * 100);
+            
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `Transferring files... ${progress}%`;
+        }
+        
+        // Utility functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function showNotification(message, type) {
+            notificationMessage.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.className = 'notification hidden';
+            }, 3000);
+        }
+        
+        function startCountdown(expiresAt) {
+            function updateCountdown() {
+                const now = new Date();
+                const timeLeft = expiresAt - now;
+                
+                if (timeLeft <= 0) {
+                    expiryTime.textContent = '00:00';
+                    showNotification('OTP has expired', 'error');
+                    return;
+                }
+                
+                const minutes = Math.floor(timeLeft / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
+                
+                expiryTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft > 0) {
+                    setTimeout(updateCountdown, 1000);
+                }
+            }
+            
+            updateCountdown();
+        }
+        
+        // Initialize the application
+        initWebSocket();
+    </script>
+</body>
+</html>
