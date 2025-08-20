@@ -208,7 +208,7 @@ async def remove_transfer_after_delay(otp, delay=10):
     await asyncio.sleep(delay)
     if otp in active_transfers:
         del active_transfers[otp]
-        logger.info(f"Removed transfer session for OTP: {otp}")
+        logger.info(f"Removed transfer session for OTP : {otp}")
 
 if __name__ == "__main__":
     import uvicorn
